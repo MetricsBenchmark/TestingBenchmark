@@ -16,131 +16,56 @@ Conceptual visualization of clusters:
 
 ### Dataset-Specific Results
 
-| Methods   | Descriptions          | Candidate values    | Selection   | AndroZoo | AndroZoo & Drebin | IMDb | MNIST | Udacity |
+| Methods   | Descriptions          | Candidate values    | Selection   | AndroZoo | IMDb | MNIST | Udacity |
 |-----------|-----------------------|---------------------|-------------|----------|-------------------|----------------------|-----------------------|---------------------|
-| **UMAP**  | Number of Components  | [5,10,25,50,75,100] | grid search | –        | –                 | 50                   | 25                    | –                   |
-|           | Minimum Distance      | [0.01,0.1,0.3,0.5]  | grid search | –        | –                 | 0.1                  | 0.1                   | –                   |
-|           | Number of Neighbors   | [5,15,25,50]        | grid search | –        | –                 | 15                   | 15                    | –                   |
-| **PCA**   | Number of Components  | [5,10,25,50,75,100] | grid search | –        | –                 | 50                   | –                     | 50                  |
-| **GRP**   | Number of Components  | [5,10,25,50,75,100] | grid search | –        | –                 | –                    | –                     | 50                  |
-| **DBSCAN**| Minimum Neighbors     | [2,5,10,15]         | grid search | –        | –                 | –                    | –                     | –                   |
-|           | Distance Threshold    | -                   | knee-point  | –        | –                 | Varied               | –                     | –                   |
-| **HDBSCAN**| Minimum Cluster Size  | [2,5,10,15]         | grid search | –        | –                 | 2                    | –                     | –                   |
-| **HAC**   | Number of Clusters    | range[5,35]         | knee-point  | 10       | 10                | 13                   | –                     | 17                  |
-| **K-Means**| Number of Clusters    | range[5,35]         | knee-point  | 9        | 10                | 13                   | –                     | 13                  |
+| **UMAP**  | Number of Components  | [5,10,25,50,75,100] | grid search | 25        | 50                   | 25                    | 50                   |
+|           | Minimum Distance      | [0.01,0.1,0.3,0.5]  | grid search | 0.1        | 0.1                  | 0.1                   | 0.1                   |
+|           | Number of Neighbors   | [5,15,25,50]        | grid search | 15        | 15                   | 15                    | 15                   |
+| **PCA**   | Number of Components  | [5,10,25,50,75,100] | grid search | 25        | 50                   | –                     | –                  |
+| **GRP**   | Number of Components  | [5,10,25,50,75,100] | grid search | 25        |  50                    | –                     |  –                |
+| **DBSCAN**| Minimum Neighbors     | [2,5,10,15]         | grid search | 2        |  2                    | –                     | –                   |
+|           | Distance Threshold    | -                   | knee-point  | Varied   | Varied               | Varied                 | Varied              |
+| **HDBSCAN**| Minimum Cluster Size  | [2,5,10,15]         | grid search | 2       | 2                    | –                     | –                   |
+| **HAC**   | Number of Clusters    | range[5,35]         | knee-point  | 10       |13                   | –                      | –                  |
+| **K-Means**| Number of Clusters    | range[5,35]         | knee-point  | 9       | 13                   | –                     | –                  |
 
 
-- **AndroZoo:** 
-  - `HAC: K = 10`, `K-Means: K = 9`.
-- **AndroZoo & Drebin:** 
-  - `HAC: K = 10`, `K-Means: K = 10`.
-- **IMDb:**  
-  - UMAP: `#Components = 50`, `Min. dist. = 0.1`, `#Neighbors = 15`.
-  - PCA: `#Components = 50`.
-  - HDBSCAN: `Min. cluster size = 2`. 
-  - HAC (knee-point): `#Clusters = 13`.  
-  - K-Means (knee-point): `#Clusters = 13`.
-- **MNIST:**  
-  - UMAP: `#Components = 25`, `Min. dist. = 0.1`, `#Neighbors = 15`.
-- **Udacity:**  
-  - Dimensionality reduction (PCA/GRP): `#Components = 50`.  
-  - HAC: `K = 17`.  
-  - K-Means: `K = 13`.
-
-
-### Selection Strategy Glossary
-- **knee-point** — model selection at the elbow/knee of a metric curve [1].
-- **grid search** — hyperparameter tuning method that exhaustively tries all candidate values within a predefined set [2].  
-
-
+### Selection Strategy Description
+- **knee-point** — a hyperparameter tuning method that selects the optimal value at the elbow/knee of a metric curve [1].
+- **grid search** — a hyperparameter tuning method that exhaustively tries all candidate values within a predefined set [2].  
 
 ## Detailed implementation of test selection metrics
 
-We group prior metrics into three families: **uncertainty-based**, **diversity-based**, and **surprise-based**.
-
 ### Uncertainty-based
-
-- **DeepGini (Gini)** — selects most uncertain samples using output probabilities [3].  
-  **Implementation.** Use model softmax over all classes (classification only).  
-  **Hyperparams.** 
-
-- **Entropy (Ent)** — Shannon-entropy of predictive distribution; higher entropy ⇒ higher uncertainty [4].  
-  **Implementation.** Use model softmax over all classes (classification only).  
-  **Hyperparams.** 
+- **DeepGini (Gini, 2020)** — implemented using the softmax layer output as the class probabilities from each studied classifier.  
+- **Entropy (Ent, 2014)** — implemented using the softmax layer output as the class probabilities from each studied classifier.  
 
 ### Diversity-based
-
-- **Neuron Coverage (NC)** — prioritizes inputs that activate more neurons above a threshold [5].  
-  **Implementation.** Compute per-input incremental coverage across hidden layers; rank by coverage gain.  
-  **Hyperparams.** Activation threshold `t = 0.75` [3, 6].
-
-- **K-Multisection Neuron Coverage (KMNC)** — partitions each neuron’s value range into `K` bins; more bins hit ⇒ more diverse [7].  
-  **Implementation.** To reduce cost, compute on the **last hidden layer** for all datasets.  
-  **Hyperparams.** `K = 100`.
-
-- **Geometric Diversity (GD)** — favors subsets with large determinant in an embedding space (diverse geometry) [8].  
-  **Implementation.**  
-  - *MNIST / Udacity*: extract features using **VGG-16**, take activations **after the last conv layer** (black-box).  
-  - *AndroZoo*: use **DeepDrebin** features from the **first hidden layer**.  
-  - Prefer shallower features to capture input-level diversity [9].  
-  **Hyperparams.** 
-
-- **Standard Deviation (STD)** — selects sets with larger per-feature variability [8].  
-  **Implementation.** Compute L2-norm of per-feature standard deviations on the **same embeddings as GD**.  
-  **Hyperparams.** 
+- **Neuron Coverage (NC, 2017)** — For all datasets, we use neurons in the `last hidden layer` to reduce computational cost, and set the neuron activation threshold at `t = 0.75`.
+- **K-Multisection Neuron Coverage (KMNC, 2018)** — We use the `last hidden layer` for all datasets to reduce computational cost, and we divide coverage for each neuron into `K = 100` sections.
+- **Geometric Diversity (GD, 2023)**
+  - *MNIST / Udacity*: We follow the original implementation, which uses **VGG-16** to extract features for image data in a black-box manner. Specifically, we use the activation value on the **layer after the last convolutional layer** as features.  
+  - *AndroZoo*: we use pre-trained **DeepDrebin** model with the **first hidden layer** to extract features. We use shallow-layer features to capture input-level diversity [9].
+  -  *IMDb*: we use pre-trained **Transformer** model with the **first hidden layer** to extract features. We use shallow-layer features to capture input-level diversity [9].
+- **Standard Deviation (STD)** — The feature extraction is the same as GD.  
 
 ### Surprise-based
+- **Likelihood-based Surprise Adequacy (LSA)** — For MNIST, AndroZoo, and IMDb, we use **last hidden layer** activations; For Udacity, we use the **penultimate hidden layer** activations.
+- **Distance-based Surprise Adequacy (DSA)** — For all classification datasets (MNIST, AndroZoo, IMDb), we use **last hidden layer** activations; DSA is classification only (requires class boundaries).  
 
-- **Likelihood-based Surprise Adequacy (LSA)** — KDE density on activation traces; lower density ⇒ more “surprising” [10].  
-  **Implementation.** Use **last hidden layer** activations; reference = **training set**; KDE for density.  
-  **Hyperparams.** Kernel/bandwidth: default from the implementation (no manual tuning reported).
+### Sampling-based, Clustering-based
+- **Cross Entropy-based Sampling (CES), DeepReduce (DR), Practical Accuracy Estimation (PACE), Multiple-Boundary Clustering & Prioritization (MCP)** — See code.
+- **DeepEST (EST)**  
+  - *Classification (MNIST, AndroZoo, IMDb)*: **DSA + confidence** as auxiliary variable (best performance reported in the original paper).  
+  - *Regression (Udacity)*: no softmax & DSA undefined ⇒ use **LSA** as auxiliary variable.  
 
-- **Distance-based Surprise Adequacy (DSA)** — distance in activation space to nearest training sample (nearest neighbor) [10].  
-  **Implementation.** Use **last hidden layer** activations; classification only (requires class boundaries).  
-  **Hyperparams.** 
-
-
-### Performance Estimation Metrics
-
-- **Cross Entropy-based Sampling (CES)** — selects a set whose distribution matches the whole test set by minimizing cross entropy [11].  
-  **Implementation.** Optimize selection to approximate test distribution in the chosen embedding space; use the same **budget** as other methods.  
-  **Hyperparams.** Sample budget (matches others).
-
-- **Practical Accuracy Estimation (PACE)** — cluster tests then sample representatives adaptively [12].  
-  **Implementation.** Cluster embeddings (UMAP → K-Means/HAC); choose **K via knee-point** and sample per-cluster adaptively.  
-  **Hyperparams.** `K` chosen by knee-point (no fixed `K`).
-
-- **DeepReduce (DR)** — multi-objective selection balancing adequacy and distribution similarity with minimal data [13].  
-  **Implementation.** Use the authors’ objectives; match selection **budget** to baselines.  
-  **Hyperparams.** Sample budget (matches others).
-
-- **DeepEST (EST)** — adaptive sampling for accuracy estimation and fault detection [14].  
-  **Implementation.**  
-  - *Classification*: auxiliary variable = **DSA + confidence** (best trade-off reported).  
-  - *Regression*: no softmax & DSA undefined ⇒ use **LSA** as auxiliary variable.  
-  **Hyperparams.** None beyond the chosen auxiliary variable.
-
-
-### Retraining-oriented Metrics
-
-- **Multiple-Boundary Clustering & Prioritization (MCP)** — prioritize boundary-region samples via top-2 predicted classes; sample evenly across clusters [15].  
-  **Implementation.** Partition by **top-2 softmax classes**; not applicable to **regression**.  
-  **Hyperparams.** None.
-
-- **Distribution-Aware Test Selection (DAT)** — hybrid: uncertain **in-distribution** + random **out-of-distribution** [16].  
-  **Implementation (OOD detection).** Semi-supervised, distance-based OOD on **intermediate features** using pre-trained models [17, 18].  
-  - *MNIST*: **LeNet-1**, **2nd hidden layer**; centroid distance threshold; **AUC-ROC 85.09%** with **Fashion-MNIST** as OOD (per Hu et al., 2022).  
-  - *AndroZoo*: **DeepDrebin**, **2nd hidden layer**; centroid distance threshold; **AUC-ROC 99.78%** with **FGSM** adversarial OOD.  
-  - *IMDb*: raw/text features separate ID vs. corrupted OOD; **AUC-ROC 70.89%**.  
-  **Scope.** **Classification only**.  
-  **Hyperparams.** OOD distance threshold chosen on validation (per dataset).
-
-
-### Baseline
-
-- **Random Selection (Rand)** — sample uniformly at random without replacement.  
-  **Implementation.** Uniform random from test set.
-
+### Hybrid
+- **Distribution-Aware Test Selection (DAT)**  
+  **Implementation of OOD detectors:** We utilize existing pre-trained models to conduct semi-supervised, distance-based OOD detection by using intermediate features, which is widely used in the literature due to its simplicity and effectiveness [17], [18]. We compute the Euclidean distance to the centroid of ID features from the training set. Samples with distances exceeding 95\% thresholds value are classified as OOD. We report the AUC-ROC score for performance check.
+  - *MNIST*: **2nd hidden layer of LeNet-1** as the feature extractor. ;  **AUC-ROC 85.09%** with **Fashion-MNIST** as OOD.  
+  - *AndroZoo*: **2nd hidden layer of DeepDrebin** as the feature extractor; **AUC-ROC 99.78%** with **FGSM** adversarial samples as OOD.  
+  - *IMDb*: **raw, pre-processed text features**; **AUC-ROC 70.89%** with corrupted text as OOD.
+  - *Udacity*: Not applicable.
 
 
 ## References
@@ -160,5 +85,5 @@ We group prior metrics into three families: **uncertainty-based**, **diversity-b
 [14]: Attaoui, M., Fahmy, H., Pastore, F., & Briand, L. (2023). *Black-box safety analysis and retraining of DNNs based on feature extraction and clustering*. ACM Transactions on Software Engineering and Methodology, 32(3), 1–40.  
 [15]: Allix, K., Bissyandé, T. F., Klein, J., & Le Traon, Y. (2016). *AndroZoo: Collecting millions of Android apps for the research community*. In Proceedings of the 13th International Conference on Mining Software Repositories.  
 [16]: Allix, K., Bissyandé, T. F., Klein, J., & Le Traon, Y. (2016). *AndroZoo online repository*. https://androzoo.uni.lu/  
-[17]: Liu, Y., Ott, M., Goyal, N., Du, J., Joshi, M., Chen, D., Levy, O., Lewis, M., Zettlemoyer, L., & Stoyanov, V. (2019). *RoBERTa: A robustly optimized BERT pretraining approach*. arXiv preprint arXiv:1907.11692.  
-[18]: Ma, L., Juefei-Xu, F., Zhang, F., Sun, J., Xue, M., Li, B., Chen, C., Su, T., Li, L., Liu, Y., et al. (2018). *DeepGauge: Multi-granularity testing criteria for deep learning systems*. In Proceedings of the 33rd ACM/IEEE International Conference on Automated Software Engineering, 120–131.  
+[17] Y. Sun, Y. Ming, X. Zhu, and Y. Li, “Out-of-distribution detection with deep nearest neighbors,” in International conference on machine learning. PMLR, 2022, pp. 20 827–20 840.
+[18] L. Ruff, R. Vandermeulen, N. Goernitz, L. Deecke, S. A. Siddiqui, A. Binder, E. M¨uller, and M. Kloft, “Deep one-class classification,” in International conference on machine learning. PMLR, 2018, pp.4393–4402.
