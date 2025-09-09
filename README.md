@@ -14,47 +14,38 @@ Conceptual visualization of clusters:
 
 ## Hyperparameters of the Three-Step Clustering Pipeline
 
-### Global Search Space & Selections
-![Cluster Visualization](Parameters.png)
-
 ### Dataset-Specific Results
+
+| Methods   | Descriptions          | Candidate values    | Selection   | AndroZoo | AndroZoo & Drebin | IMDb | MNIST | Udacity |
+|-----------|-----------------------|---------------------|-------------|----------|-------------------|----------------------|-----------------------|---------------------|
+| **UMAP**  | Number of Components  | [5,10,25,50,75,100] | grid search | –        | –                 | 50                   | 25                    | –                   |
+|           | Minimum Distance      | [0.01,0.1,0.3,0.5]  | grid search | –        | –                 | 0.1                  | 0.1                   | –                   |
+|           | Number of Neighbors   | [5,15,25,50]        | grid search | –        | –                 | 15                   | 15                    | –                   |
+| **PCA**   | Number of Components  | [5,10,25,50,75,100] | grid search | –        | –                 | 50                   | –                     | 50                  |
+| **GRP**   | Number of Components  | [5,10,25,50,75,100] | grid search | –        | –                 | –                    | –                     | 50                  |
+| **DBSCAN**| Minimum Neighbors     | [2,5,10,15]         | grid search | –        | –                 | –                    | –                     | –                   |
+|           | Distance Threshold    | -                   | knee-point  | –        | –                 | Varied               | –                     | –                   |
+| **HDBSCAN**| Minimum Cluster Size  | [2,5,10,15]         | grid search | –        | –                 | 2                    | –                     | –                   |
+| **HAC**   | Number of Clusters    | range[5,35]         | knee-point  | 10       | 10                | 13                   | –                     | 17                  |
+| **K-Means**| Number of Clusters    | range[5,35]         | knee-point  | 9        | 10                | 13                   | –                     | 13                  |
+
 
 - **AndroZoo:** 
   - `HAC: K = 10`, `K-Means: K = 9`.
 - **AndroZoo & Drebin:** 
   - `HAC: K = 10`, `K-Means: K = 10`.
 - **IMDb:**  
-  - UMAP: `#Components = 50`, `Min. dist. = 0.1`, `#Neighbors = 15`  
-  - PCA: `#Components = 50`  
-  - HDBSCAN: `Min. cluster size = 2`  
-  - HAC (knee-point): `#Clusters = 13`  
-  - K-Means (knee-point): `#Clusters = 13`
+  - UMAP: `#Components = 50`, `Min. dist. = 0.1`, `#Neighbors = 15`.
+  - PCA: `#Components = 50`.
+  - HDBSCAN: `Min. cluster size = 2`. 
+  - HAC (knee-point): `#Clusters = 13`.  
+  - K-Means (knee-point): `#Clusters = 13`.
 - **MNIST:**  
-  - UMAP: `#Components = 25`, `Min. dist. = 0.1`, `#Neighbors = 15`
+  - UMAP: `#Components = 25`, `Min. dist. = 0.1`, `#Neighbors = 15`.
 - **Udacity:**  
-  - Dimensionality reduction (PCA/GRP): `#Components = 50`  
-  - HAC: `K = 17`  
-  - K-Means: `K = 13`
-
-### Abbreviations
-
-- **UMAP** — Uniform Manifold Approximation and Projection  
-- **PCA** — Principal Component Analysis  
-- **GRP** — Gaussian Random Projection  
-- **DBSCAN** — Density-Based Spatial Clustering of Applications with Noise  
-- **HDBSCAN** — Hierarchical DBSCAN  
-- **HAC** — Hierarchical Agglomerative Clustering 
-
-
-### Parameter Glossary
-- **`#` = “Number of …”** — legacy shorthand that appears in some figures/tables (e.g., `#Components`, `#Neighbors`).
-- **K** — number of clusters (used by HAC / K-Means).  
-- **#Components** — projected dimensionality (UMAP / PCA / GRP).  
-- **Min. dist.** — minimum distance between embedded points (UMAP).  
-- **#Neighbors** — size of local neighborhood used for manifold approximation (UMAP). 
-- **min_neighbors** — minimum number of neighbors within the distance cutoff for a point to be a core point (**DBSCAN**).
-- **Dist. Threshold** — distance cutoff for neighborhood connectivity.
-- **Min. cluster size** — minimum number of points required to form a cluster (HDBSCAN). 
+  - Dimensionality reduction (PCA/GRP): `#Components = 50`.  
+  - HAC: `K = 17`.  
+  - K-Means: `K = 13`.
 
 
 ### Selection Strategy Glossary
