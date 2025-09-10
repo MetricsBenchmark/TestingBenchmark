@@ -1,5 +1,4 @@
 # TestingBenchmark
-***
 This repository contains experiments conducted in the paper 'Insights and Recommendations of Test Selection Metrics for Practitioners: An Empirical Study'.
 
 ### Abstract
