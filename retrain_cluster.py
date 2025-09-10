@@ -1,23 +1,33 @@
+from sklearn.model_selection import train_test_split
+import numpy as np
+from MNIST_Udacity import mnist
+from learner import model_scope_dict
 def retrain_cluster(dataset_name, model_name):
-    from sklearn.model_selection import train_test_split
     mispred_indices = np.load(f'./result/mispred_indices/{model_name}_misprd_indices.npy')
     cluster_lbls = np.load(f'./result/cluster_lbls/{model_name}_cluster_lbls.npy')
     summary = {}
     if 'mnist' in dataset_name:
         model = mnist.get_model(model_name)
+        testX, testy = mnist.get_data('lenet1')  # get_mnist
+        testy = onehot_to_int(testy)
 
-    if 'imdb' in dataset_name:
+    elif 'imdb' in dataset_name:
         testX = np.load(f'./data/tokenized/testX.npy')  # (25000,200)
         testy = np.load(f'./data/tokenized/testy.npy')  # (25000)
+        testy = onehot_to_int(testy)
         mispred_indices = np.load(f'./data/tokenized/{model_name}_mispred_idx.npy')
-        cluster_lbls = np.load(f'./result/cluster_lbls/{model_name}_cluster_lbls.npy')
         model = imdb.lm(name=model_name, mode='tokenized')
 
-    if 'udacity' not in dataset_name:
-        testy = onehot_to_int(testy)
+    elif 'udacity' in dataset_name:
+        targeted_model_names_dict = model_scope_dict.copy()
+        model = targeted_model_names_dict[model_name](hyper_params=hyper_param, mode='test')
+
+    elif 'andro' in dataset_name:
+        targeted_model_names_dict = model_scope_dict.copy()
+        model = targeted_model_names_dict[model](mode='test')
+
     X_mispred, y_mispred = testX[mispred_indices], testy[mispred_indices]
     for cluster_id in np.unique(cluster_lbls):
-        print(np.sum(cluster_lbls == cluster_id))
         if np.sum(cluster_lbls == cluster_id) < 5 or cluster_id == -1:
             continue
         # Select the cluster of interest
