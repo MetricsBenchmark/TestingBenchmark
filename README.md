@@ -51,9 +51,18 @@ This section provides a detailed explanation of implementation choices we made f
   - *Udacity*: Not applicable.
 
 ### Heatmap Visualizations for MNIST and IMDb
-![MNIST (best)](mnist_resnet_umap_dbscan_cluster0.png)
-![MNIST (other)](mnist_resnet_pca_kmeans_cluster4.png)
-
+<table>
+<tr>
+<td align="center">
+  <img src="mnist_resnet_umap_dbscan_cluster0.png" alt="MNIST (best)" width="300"/><br/>
+  <sub>Figure 1: MNIST (best)</sub>
+</td>
+<td align="center">
+  <img src="mnist_resnet_pca_kmeans_cluster4.png" alt="MNIST (other)" width="300"/><br/>
+  <sub>Figure 2: MNIST (other)</sub>
+</td>
+</tr>
+</table>
 ![IMDb (best)](imdb_umap_dbscan_roberta_cluster5.png)
 ![IMDb (other)](imdb_GRP_Kmeans_electra_cluster1.png)
 
