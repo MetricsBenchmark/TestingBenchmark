@@ -103,7 +103,7 @@ Compute time efficiency of selection metrics:
 - **[Andro]** ```python3 malware_exp.py --exp time_efficiency```
 
 ### References
-[1]: Satopää, V., Albrecht, J., Irwin, D., & Raghavan, B. (2011). *Finding a “Kneedle” in a Haystack: Detecting Knee Points in System Behavior*. ICDCS Workshops, 166–171.
+[1]: Satopää, V., Albrecht, J., Irwin, D., & Raghavan, B. (2011). *Finding a “Kneedle” in a Haystack: Detecting Knee Points in System Behavior*. ICDCS Workshops, 166–171.                                                                                                    
 [2]: Bergstra, J., & Bengio, Y. (2012). *Random Search for Hyper-Parameter Optimization*. JMLR, 13, 281–305.  
 [3]: Attaoui, M., Fahmy, H., Pastore, F., & Briand, L. (2023). *Black-box safety analysis and retraining of DNNs based on feature extraction and clustering*. ACM Transactions on Software Engineering and Methodology, 32(3), 1–40.  
 [4]: Y. Sun, Y. Ming, X. Zhu, and Y. Li. (2022). *Out-of-distribution detection with deep nearest neighbors*. In International Conference on Machine Learning.     
