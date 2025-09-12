@@ -8,7 +8,7 @@ Deep learning (DL)-based systems can exhibit unexpected behavior when exposed to
 ### Conceptual Visualization of Clusters
 To enhance the understanding of a fault in the DNN, we provide a 2-dimensional visualization of the concept. In short, a fault is defined as the cause of DNN mispredictions, which can be estimated through a cluster of similar mispredicted samples in the feature space. In the plot, each **red ball** represents a *mispredicted* sample, each **green ball** represents a *correctly predicted* sample, and a **black circle** encompassing red balls denotes a *cluster*.
 
-<img src="2D-concept-of-cluster.drawio.png" alt="Cluster Visualization" width="400"/>
+<img src="figures/2D-concept-of-cluster.drawio.png" alt="Cluster Visualization" width="400"/>
 
 ### Hyperparameters in Clustering Pipelines
 To supplement paper results, we provide optimal hyperparameter values and their corresponding selection methods used for each candidate pipelines. This ensures a fair comparison between pipelines. Note that, for MNIST and Udacity, we only report optimal values under the best pipeline suggested by [3].
@@ -53,11 +53,11 @@ This section provides a detailed explanation of implementation choices we made f
 <table>
 <tr>
 <td align="center">
-  <img src="mnist_resnet_umap_dbscan_cluster0.png" alt="MNIST (best)" width="300"/><br/>
+  <img src="figures/mnist_resnet_umap_dbscan_cluster0.png" alt="MNIST (best)" width="300"/><br/>
   <sub>Figure 1: MNIST (best)</sub>
 </td>
 <td align="center">
-  <img src="mnist_resnet_pca_kmeans_cluster4.png" alt="MNIST (other)" width="300"/><br/>
+  <img src="figures/mnist_resnet_pca_kmeans_cluster4.png" alt="MNIST (other)" width="300"/><br/>
   <sub>Figure 2: MNIST (other)</sub>
 </td>
 </tr>
@@ -66,11 +66,11 @@ This section provides a detailed explanation of implementation choices we made f
 <table>
 <tr>
 <td align="center">
-  <img src="imdb_umap_dbscan_roberta_cluster5.png" alt="IMDb (best)" width="300"/><br/>
+  <img src="figures/imdb_umap_dbscan_roberta_cluster5.png" alt="IMDb (best)" width="300"/><br/>
   <sub>Figure 1: IMDb (best)</sub>
 </td>
 <td align="center">
-  <img src="imdb_GRP_Kmeans_electra_cluster1.png" alt="IMDb (other)" width="300"/><br/>
+  <img src="figures/imdb_GRP_Kmeans_electra_cluster1.png" alt="IMDb (other)" width="300"/><br/>
   <sub>Figure 2: IMDb (other)</sub>
 </td>
 </tr>
