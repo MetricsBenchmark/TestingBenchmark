@@ -79,7 +79,30 @@ This section provides a detailed explanation of implementation choices we made f
 MNIST (best) is obtained from the pipeline ResNet-50, UMAP, DBSCAN; MNIST (other) draws a random cluster from the pipeline ResNet-50, PCA, K-Means.
 IMDb (best): RoBERTa, UMAP, DBSCAN; IMDb (other): ELECTRA, GRP, K-Means. 
 In summary, the patterns shown are similar to the heatmaps of Udacity and AndroZoo, demonstrated in the manuscript.
+
+
+## Repo structure
+- ```AndroZoo/, IMDb/, MNIST_Udacity/``` - Folder containing code for AndroZoo, IMDb, MNIST, and Udacity datasets, respectively.
+- ```figures/``` - Folder containing figures used in this repository.
+- ```budget_plot.py``` - File containing code for selection budget sensitivity heatmap plot.
+- ```draw_heatmap.py``` - File containing code for drawing heatmap feature visualization of clusters.
+- ```retrain_cluster.py``` - File containing code for cluster-retraining validation.
+
+## Dependencies
+```angular2html
+conda env create -f empirical.yml
+conda activate empirical
+
+conda env create -f cluster.yml
+conda activate cluster
+```
+
 ## Experiments
+### Data preparation: Create OOD Testing sets.
+- **[MNIST, Udacity]** ```python3 MNIST_Udacity/create_OOD_data.py```
+- **[IMDb]** ```python3 IMDb/create_OOD_data.py```
+- **[Andro]** ```python3 AndroZoo/create_OOD_data.py```
+
 ### RQ1. Preliminary analysis.
 - **[MNIST]** RQ1.1. Heatmap Visualization. ```python3 heatmap_cluster.py --model lenet1 --FE resnet50 --DR UMAP --CA dbscan```. Retraining on clusters C_i and C_j.  ```python3 retrain_cluster.py --dataset mnist --model lenet1```. Model can be selected from choices [lenet1, lenet4, lenet5].
 - **[Udacity]** RQ1.1. Heatmap Visualization. ```python3 heatmap_cluster.py --model dave2v1 --FE resnet50 --DR UMAP --CA dbscan```. Retraining on clusters C_i and C_j.  ```python3 retrain_cluster.py --dataset udacity --model dave2v1```. Model can be selected from choices [dave2v1, dave2v2, dave2v3, epoch].
